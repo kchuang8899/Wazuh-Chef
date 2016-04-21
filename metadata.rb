@@ -1,0 +1,7 @@
+name             'coupa-ossec'
+maintainer       'Coupa Software Inc.'
+maintainer_email 'operations-team@coupa.com'
+license          'All rights reserved'
+description      'Installs/Configures coupa-ossec'
+long_description 'Installs/Configures coupa-ossec'
+version          '0.1.0'

@@ -1,0 +1,5 @@
+/var/ossec/logs/alerts/cloudtrail-ossec.log {
+  lastaction
+    /opt/coupa/bin/store_logs.rb $@ || :
+  endscript
+}

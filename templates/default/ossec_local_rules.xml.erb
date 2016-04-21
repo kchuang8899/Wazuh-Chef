@@ -1,0 +1,129 @@
+<group name="syslog,sudo">
+  <rule id="5403" level="4" overwrite="yes">
+    <if_sid>5400</if_sid>
+    <options>no_email_alert</options>
+    <if_fts></if_fts>
+    <description>First time user executed sudo.</description>
+  </rule>                  
+</group>
+
+<group name="syslog,sshd,">
+  <rule id="5712" level="10" frequency="6" timeframe="120" ignore="60" overwrite="yes">
+    <if_matched_sid>5710</if_matched_sid>
+    <options>no_email_alert</options>
+    <description>SSHD brute force trying to get access to </description>
+    <description>the system.</description>
+    <group>authentication_failures,</group>
+  </rule>
+
+  <rule id="5706" level="1" overwrite="yes">
+    <if_sid>5700</if_sid>
+    <match>Did not receive identification string from</match>
+    <description>SSH insecure connection attempt (scan).</description>
+    <group>recon,</group>
+  </rule>
+</group>
+
+<group name="syslog,fts,">
+  <rule id="10100" level="4" overwrite="yes">
+    <if_group>authentication_success</if_group>
+    <options>no_email_alert</options>
+    <if_fts></if_fts>
+    <group>authentication_success</group>
+    <description>First time user logged in.</description>
+  </rule>
+</group>
+
+<group name="web,accesslog,">
+  <rule id="100001" level="0">
+    <if_sid>31122</if_sid>
+    <url>^/suppliers/new_supplier_form</url>
+    <description>Ignore 500 error for new supplier form</description>
+  </rule>
+  <rule id="100002" level="0">
+    <if_sid>31122</if_sid>
+    <match>/refresh.gif |/pagerror.gif </match>
+    <description>Ignore IE error page image requests</description>
+  </rule>
+  <rule id="100003" level="0">
+    <if_sid>31101</if_sid>
+    <url>^/api/</url>
+    <description>Ignore 400 errors for API calls</description>
+  </rule>
+  <rule id="100004" level="0">
+    <if_sid>31103, 31104, 31105, 31106</if_sid>
+    <url>^/attachment/attachment_file/file|^/bookmarklet/add|^/items/auto_complete|^/items/new|^/i.js|^/shopping_assistant/refresh_widget|^/suppliers/auto_complete|^/suppliers/new_supplier_form|^/search/irequest_search|^/user/session_alert|^/pmya/|^/pmyar/|^/supplier_invoices/</url>
+    <description>A web attack returned code 200 (success).</description>
+    <group>attack,</group>
+  </rule>
+  <rule id="100009" level="0">
+    <if_sid>31115</if_sid>
+    <url>^/pmya/|^/pmyar/</url>
+    <description>Ignore "URL too long" for phpMyAdmin</description>
+  </rule>
+</group>
+
+<group name="postfix,maillog,">
+  <rule id="100005" level="5">
+    <if_sid>3300</if_sid>
+    <id>^451$</id>
+    <description>Mail service might be down </description>
+    <description>(451: Service unavailable - try again later).</description>
+  </rule>
+  <rule id="100014" level="2">
+    <if_sid>3330</if_sid>
+    <match>451 Internal resource temporarily unavailable</match>
+    <description>Deprioritizing greylisting</description>
+  </rule>
+</group>
+
+<group name="local">
+ <rule id="100006" level="0">
+   <if_sid>1002</if_sid>
+   <match>No results match your search criteria.|Either the vistor clicked on the 'Stop' button in the web browser, or the visitor's connection has stalled and couldn't receive the data that Apache is sending to it. As a result, you will probably see a 'Broken Pipe' error in this log file. Please ignore it, this is normal. You might also want to increase Apache's TimeOut configuration option if you experience this problem often.</match>
+   <description>Events ignored</description>
+ </rule>
+ <rule id="100007" level="0">
+   <if_sid>1002</if_sid>
+   <program_name>syslog-ng</program_name>
+   <match>^Log statistics</match>
+   <description>Ignoring syslog-ng statistics messages</description>
+ </rule>
+</group>
+
+<group name="ossec,">
+  <rule id="502" level="3" overwrite="yes">
+    <if_sid>500</if_sid>
+    <options>no_email_alert</options>
+    <match>Ossec started</match>
+    <description>Ossec server started.</description>
+  </rule>
+</group>
+
+<var name="BAD_WORDS">core_dumped|failure|error|attack|bad |illegal |denied|refused|unauthorized|fatal|failed|Segmentation Fault|Corrupted</var>
+<group name="syslog,errors,">
+  <rule id="1002" level="2" overwrite="yes">
+    <match>$BAD_WORDS</match>
+    <options>no_email_alert</options>
+    <description>Unknown problem somewhere in the system.</description>
+  </rule>
+  <rule id="100013" level="0">
+    <if_sid>1003</if_sid>
+    <regex>GET /sessions/openid_callback.*control.coupahost.com</regex>
+    <description>Ignore Syslog "Size Too Large" error for CoupaControl login</description>
+  </rule>
+  <rule id="100015" level="0">
+    <if_sid>1003</if_sid>
+    <program_name>RightLink</program_name>
+    <description>Ignore RightLink(RightScale) "too large" syslog messsages</description>
+  </rule>
+</group>
+
+<group name="syslog,attacks,">
+  <rule id="100008" level="6">
+    <if_sid>40106</if_sid>
+    <options>no_email_alert</options>
+    <description>Downgrading level of old Solaris yppasswd exploit</description>
+  </rule>
+</group>
+<!-- NEXT CUSTOM RULE ID 100016 -->
