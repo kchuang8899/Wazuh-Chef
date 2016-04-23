@@ -17,11 +17,11 @@ execute "install-pip" do
 end
 
 
-bash 'installing awscli' do
+bash 'installing boto' do
   code <<-EOH
-    pip install awscli && pip install boto
+    pip install boto
   EOH
-    not_if { ::File.exists?('/usr/bin/aws') }
+  not_if { ::File.exists?('/usr/lib/python2.6/site-packages/boto') }
 end
 
 # Use data bag viewer to grab credentials
@@ -55,13 +55,13 @@ file '/var/ossec/logs/cloudtrail-ossec.log' do
 end
 
 
-#cron 'GetAWSlog' do
-#  minute '*/7'
-#  mailto 'jose@wazuh.com'
-#  command "/usr/bin/flock -n /tmp/fcj.lockfile -c '/opt/coupa/bin/getawslog.py -b #{node['coupa-ossec']['aws']['backetname']} -d -j -D -l /var/ossec/logs/cloudtrail-ossec.log'"
-#  user 'ossec'
-#  only_if {::File.exist?('/var/ossec/logs/cloudtrail-ossec.log')}
-#end
+cron 'GetAWSlog' do
+  minute '*/7'
+  mailto 'jose@wazuh.com'
+  command "/usr/bin/flock -n /tmp/fcj.lockfile -c '/opt/coupa/bin/getawslog.py -b #{node['coupa-ossec']['aws']['backetname']} -d -j -D -l /var/ossec/logs/cloudtrail-ossec.log'"
+  user 'ossec'
+  only_if {::File.exist?('/var/ossec/logs/cloudtrail-ossec.log')}
+end
 
 cookbook_file "/etc/logrotate.d/cloudtrail-ossec" do
   source "etc/logrotate.d/cloudtrail-ossec"
