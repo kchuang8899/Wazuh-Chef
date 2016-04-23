@@ -60,7 +60,7 @@ end
 #  mailto 'jose@wazuh.com'
 #  command "/usr/bin/flock -n /tmp/fcj.lockfile -c '/opt/coupa/bin/getawslog.py -b #{node['coupa-ossec']['aws']['backetname']} -d -j -D -l /var/ossec/logs/cloudtrail-ossec.log'"
 #  user 'ossec'
-#  only_if do File.exist?('/var/ossec/logs/cloudtrail-ossec.log') end
+#  only_if {::File.exist?('/var/ossec/logs/cloudtrail-ossec.log')}
 #end
 
 cookbook_file "/etc/logrotate.d/cloudtrail-ossec" do
