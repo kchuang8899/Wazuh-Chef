@@ -1,9 +1,5 @@
-package 'package npm for RESTful API' do
-  package_name 'npm'
-end
-
-package 'package nodejs for RESTful API' do
-  package_name 'nodejs'
+package 'packages for RESTful API' do
+  package_name ['npm', 'nodejs']
 end
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{node['coupa-ossec']['string']}" do

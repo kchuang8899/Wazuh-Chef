@@ -1,6 +1,0 @@
-/var/ossec/logs/alerts/alerts.json {
-  lastaction
-    /opt/coupa/bin/store_logs.rb $@ || :
-  endscript
-}
-
