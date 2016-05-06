@@ -24,7 +24,7 @@ ruby_block 'ossec install_type' do
     else
       type = nil
 
-      File.open('/etc/ossec-init.conf') do |file|
+      File.open('/var/ossec/etc/ossec-init.conf') do |file|
         file.each_line do |line|
           if line =~ /^TYPE="([^"]+)"/
             type = Regexp.last_match(1)

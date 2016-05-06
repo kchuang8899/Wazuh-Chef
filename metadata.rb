@@ -1,4 +1,4 @@
-name             'ossec-authd'
+name             'wazuh-ossec'
 maintainer       'Wazuh Inc.'
 maintainer_email 'jose@wazuh.com'
 license          'Apache 2.0'

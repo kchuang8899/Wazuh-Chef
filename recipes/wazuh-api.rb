@@ -2,31 +2,31 @@ package 'packages for RESTful API' do
   package_name ['npm', 'nodejs']
 end
 
-remote_file "#{Chef::Config[:file_cache_path]}/#{node['coupa-ossec']['string']}" do
-  source node['coupa-ossec']['url']
+remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['api']['version']}.tar.gz" do
+  source node['ossec']['api']['url']
 end
 
 bash "extract_RESful API" do
   code <<-EOH
     cd #{Chef::Config[:file_cache_path]} &&
-    tar -zxvf #{node['coupa-ossec']['string']}
+    tar -zxvf #{node['ossec']['api']['version']}.tar.gz
     EOH
-  not_if "test -d #{Chef::Config[:file_cache_path]}/wazuh-API-1.2"
+  not_if "test -d #{Chef::Config[:file_cache_path]}/#{node['ossec']['api']['version']}.tar.gz"
 end
 
 bash "Install_RESful API" do
   code <<-EOH
     cd #{Chef::Config[:file_cache_path]} &&
-    mkdir -p #{node['coupa-ossec']['dir']}/api &&  cp -r wazuh-API-*/* #{node['coupa-ossec']['dir']}/api
+    mkdir -p #{node['ossec']['dir']}/api &&  cp -r #{node['ossec']['api']['version']}/* #{node['ossec']['dir']}/api
     EOH
-  not_if "test -d #{node['coupa-ossec']['dir']}/api"
+  not_if "test -d #{node['ossec']['dir']}/api"
 end
 
 bash "Install_npm_RESful API" do
   code <<-EOH
-    cd #{node['coupa-ossec']['dir']}/api && npm install
+    cd #{node['ossec']['dir']}/api && npm install
     EOH
-  not_if "test -d #{node['coupa-ossec']['dir']}/api/node_modules"
+  not_if "test -d #{node['ossec']['dir']}/api/node_modules"
 end
 
 template 'wazuh-api init' do
@@ -37,7 +37,7 @@ template 'wazuh-api init' do
   mode 0755
 end
 
-cookbook_file "#{node['coupa-ossec']['dir']}/api/config.js" do
+cookbook_file "#{node['ossec']['dir']}/api/config.js" do
   source "var/ossec/api/config.js"
   owner 'root'
   group 'ossec'
