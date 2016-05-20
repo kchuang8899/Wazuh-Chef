@@ -44,3 +44,11 @@ execute "#{dir}/bin/agent-auth #{args}" do
 end
 
 include_recipe 'ossec::common'
+
+cookbook_file "#{node['ossec']['dir']}/etc/internal_options.conf" do
+  source "var/ossec/etc/agent_internal_options.conf"
+  owner 'root'
+  group 'ossec'
+  action :create
+  notifies :restart, "service[ossec]", :delayed
+end

@@ -1,3 +1,6 @@
+
+include_recipe 'yum-epel'
+
 package 'packages for RESTful API' do
   package_name ['npm', 'nodejs']
 end
@@ -17,7 +20,7 @@ end
 bash "Install_RESful API" do
   code <<-EOH
     cd #{Chef::Config[:file_cache_path]} &&
-    mkdir -p #{node['ossec']['dir']}/api &&  cp -r #{node['ossec']['api']['version']}/* #{node['ossec']['dir']}/api
+    mkdir -p #{node['ossec']['dir']}/api &&  cp -r #{node['ossec']['api']['name']}/* #{node['ossec']['dir']}/api
     EOH
   not_if "test -d #{node['ossec']['dir']}/api"
 end

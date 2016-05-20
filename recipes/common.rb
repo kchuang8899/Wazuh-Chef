@@ -88,7 +88,7 @@ end
 # abort immediately. Explicitly stopping the service here after
 # installation allows Chef to start it when client.keys has content.
 service 'stop ossec' do
-  service_name 'ossec-hids' unless platform_family?('debian')
+  service_name 'ossec' unless platform_family?('debian')
   action :nothing
 
   %w( disable stop ).each do |action|
@@ -97,12 +97,11 @@ service 'stop ossec' do
 end
 
 service 'ossec' do
-  service_name 'ossec-hids' unless platform_family?('debian')
+  service_name 'ossec' unless platform_family?('debian')
   supports status: true, restart: true
   action [:enable, :start]
 
   not_if do
-    (node['ossec']['install_type'] != 'local' && !File.size?("#{node['ossec']['dir']}/etc/client.keys")) ||
       (node['ossec']['install_type'] == 'agent' && node['ossec']['agent_server_ip'].nil?)
-  end
+    end
 end
