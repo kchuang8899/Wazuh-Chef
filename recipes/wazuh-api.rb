@@ -1,10 +1,6 @@
 
-
-case node['platform']
-when 'debian', 'ubuntu'
-  # do debian/ubuntu things
-when 'redhat', 'centos'
-     include_recipe 'yum-epel'
+if ['redhat', 'centos'].include?(node['platform'])
+  include_recipe 'yum-epel'
 end
 
 package 'packages for RESTful API' do
