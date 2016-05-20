@@ -11,7 +11,7 @@ bash "extract_RESful API" do
     cd #{Chef::Config[:file_cache_path]} &&
     tar -zxvf #{node['ossec']['api']['version']}.tar.gz
     EOH
-  not_if "test -d #{Chef::Config[:file_cache_path]}/#{node['ossec']['api']['version']}.tar.gz"
+  not_if "test -d #{Chef::Config[:file_cache_path]}/#{node['ossec']['api']['name']}"
 end
 
 bash "Install_RESful API" do
@@ -29,20 +29,24 @@ bash "Install_npm_RESful API" do
   not_if "test -d #{node['ossec']['dir']}/api/node_modules"
 end
 
+api_keys =  Chef::EncryptedDataBagItem.load("passwords", "api")
+
+
+file "#{node['ossec']['dir']}/api/ssl/htpasswd" do
+  mode 0544
+  owner "root"
+  group "root"
+  content "#{api_keys['htpasswd_user']}:#{api_keys['htpasswd_passcode']}"
+  action :create
+  notifies :restart, "service[wazuh-api]", :delayed
+end
+
 template 'wazuh-api init' do
   path '/etc/init.d/wazuh-api'
   source 'wazuh-api.service.erb'
   owner 'root'
   group 'root'
   mode 0755
-end
-
-cookbook_file "#{node['ossec']['dir']}/api/config.js" do
-  source "var/ossec/api/config.js"
-  owner 'root'
-  group 'ossec'
-  action :create
-  notifies :restart, "service[wazuh-api]", :delayed
 end
 
 service 'wazuh-api' do

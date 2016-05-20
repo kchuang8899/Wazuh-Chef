@@ -17,17 +17,12 @@
 # limitations under the License.
 #
 
+package 'packages to compile Wazuh-ossec' do
+  package_name ['gcc', 'make']
+end
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}.tar.gz" do
   source node['ossec']['manager']['url']
-end
-
-package 'Install gcc to compile Wazuh-ossec' do
-  package_name 'gcc'
-end
-
-package 'Install make to compile Wazuh-ossec' do
-  package_name 'make'
 end
 
 package 'openssl-devel' do
@@ -60,7 +55,7 @@ include_recipe 'wazuh-ossec::common'
 
 include_recipe 'wazuh-ossec::wazuh-api'
 
-#authd = node['ossec']['authd']
+authd = node['ossec']['authd']
 
 #if node['init_package'] == 'systemd'
 #  template 'ossec-authd init' do

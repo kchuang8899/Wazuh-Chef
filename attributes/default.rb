@@ -21,15 +21,8 @@ default['ossec']['dir']             = '/var/ossec'
 default['ossec']['server_role']     = 'ossec_server'
 default['ossec']['server_env']      = nil
 default['ossec']['agent_server_ip'] = nil
-default['ossec']['manager']['name'] = "ossec-wazuh-1.1"
-default['ossec']['manager']['version'] = "v1.1.tar.gz"
-default['ossec']['manager']['url'] = "https://github.com/wazuh/ossec-wazuh/archive/#{node['ossec']['manager']['version']}"
 # The following attributes are mapped to XML for ossec.conf using
 # Gyoku. See the README for details on how this works.
-
-# API
-default['ossec']['api']['version'] = "wazuh-API-1.2"
-default['ossec']['api']['url'] = "https://github.com/wazuh/wazuh-API/archive/v1.2.tar.gz"
 
 default['ossec']['conf']['all']['syscheck']['frequency'] = 21_600
 default['ossec']['conf']['all']['rootcheck']['disabled'] = false
@@ -112,12 +105,13 @@ default['ossec']['conf']['all']['rootcheck']['rootkit_trojans'] = "#{node['ossec
   'sysmon_rules.xml',
   'auditd_rules.xml',
   'usb_rules.xml',
+  'amazon_rules.xml',
   'amazon-iam_rules.xml',
   'amazon-ec2_rules.xml',
   'local_rules.xml'
 ]
 
-  
+
 
   default['ossec']['conf'][type]['syscheck']['frequency'] = 7200
   default['ossec']['conf'][type]['syscheck']['nodiff'] = ['/etc/ssl/private.key']
@@ -200,7 +194,7 @@ default['ossec']['conf']['all']['rootcheck']['system_audit'] = [
   '/var/ossec/etc/shared/cis_rhel6_linux_rcl.txt'
   ]
 
-default['coupa-ossec-mgr']['conf']['all']['localfile'] = [
+default['ossec']['conf']['all']['localfile'] = [
   {
     'log_format' => 'syslog',
     'location' => '/var/log/messages'
@@ -268,7 +262,7 @@ default['coupa-ossec-mgr']['conf']['all']['localfile'] = [
 ]
 
 default['ossec']['conf']['server']['remote']['connection'] = 'secure'
-default['ossec']['conf']['agent']['client']['server-ip'] = node['coupa-ossec-mgr']['agent_server_ip']
+default['ossec']['conf']['agent']['client']['server-ip'] = node['ossec']['agent_server_ip']
 
 # agent.conf is also populated with Gyoku but in a slightly different
 # way. We leave this blank by default because Chef is better at
