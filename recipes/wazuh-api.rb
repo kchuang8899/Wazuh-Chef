@@ -1,5 +1,11 @@
 
-include_recipe 'yum-epel'
+
+case node['platform']
+when 'debian', 'ubuntu'
+  # do debian/ubuntu things
+when 'redhat', 'centos'
+     include_recipe 'yum-epel'
+end
 
 package 'packages for RESTful API' do
   package_name ['npm', 'nodejs']
