@@ -113,7 +113,7 @@ default['ossec']['conf']['all']['rootcheck']['rootkit_trojans'] = "#{node['ossec
 
 
 
-  default['ossec']['conf'][type]['syscheck']['frequency'] = 7200
+  default['ossec']['conf'][type]['syscheck']['frequency'] = 8000
   default['ossec']['conf'][type]['syscheck']['nodiff'] = ['/etc/ssl/private.key']
   default['ossec']['conf'][type]['remote']['connection'] = ['secure']
 
@@ -167,7 +167,7 @@ default['ossec']['conf']['all']['active-response']['level'] = ['6']
 default['ossec']['conf']['all']['active-response']['timeout'] = ['1800']
 
 default['ossec']['conf']['all']['syscheck']['directories'] = [
-  { '@check_all' => true, 'content!' => '/etc,/usr/bin,/usr/sbin' },
+  { '@check_all' => true, '@realtime' => true, 'content!' => '/etc,/usr/bin,/usr/sbin' },
   { '@check_all' => true, 'content!' => '/bin,/sbin' }
   ]
 default['ossec']['conf']['all']['syscheck']['auto_ignore'] = false
