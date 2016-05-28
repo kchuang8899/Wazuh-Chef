@@ -1,0 +1,19 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: manager
+    run_list:
+      - recipe[pm_wazuh_ossec::manager]
+    attributes:
+  - name: agent
+    run_list:
+      - recipe[pm_wazuh_ossec::agent]
+    attributes:
