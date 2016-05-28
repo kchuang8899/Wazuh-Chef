@@ -1,0 +1,10 @@
+DEPENDENCIES
+  apt
+  wazuh_ossec
+    path: .
+    metadata: true
+
+GRAPH
+  apt (3.0.0)
+  wazuh_ossec (0.0.1)
+    apt (>= 0.0.0)

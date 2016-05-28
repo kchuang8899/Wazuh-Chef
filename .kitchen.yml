@@ -6,14 +6,17 @@ provisioner:
   name: chef_solo
 
 platforms:
+  - name: ubuntu-12.04
+    run_list: apt::default
   - name: ubuntu-14.04
+    run_list: apt::default
 
 suites:
   - name: manager
     run_list:
-      - recipe[pm_wazuh_ossec::manager]
+      - recipe[wazuh_ossec::manager]
     attributes:
   - name: agent
     run_list:
-      - recipe[pm_wazuh_ossec::agent]
+      - recipe[wazuh_ossec::agent]
     attributes:

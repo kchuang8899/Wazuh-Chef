@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe 'apt::default'
 
 package 'packages to compile Wazuh-ossec Ubuntu' do
     package_name ['gcc', 'make', 'libssl-dev', 'curl']

@@ -1,4 +1,4 @@
-name             'pm_wazuh_ossec'
+name             'wazuh_ossec'
 maintainer       'Wazuh Inc.'
 maintainer_email 'jose@wazuh.com'
 license          'Apache 2.0'
