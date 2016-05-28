@@ -1,16 +1,17 @@
-name             'wazuh-ossec'
+name             'pm_wazuh_ossec'
 maintainer       'Wazuh Inc.'
 maintainer_email 'jose@wazuh.com'
 license          'Apache 2.0'
 description      'Installs and onfigures ossec'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.0.5'
+version          '0.0.1'
 
-%w( apt yum-epel ).each do |pkg|
+%w( apt ).each do |pkg|
   depends pkg
 end
 
-%w( debian ubuntu redhat centos fedora ).each do |os|
+%w( debian ubuntu ).each do |os|
   supports os
 end
 
+depends 'apt'

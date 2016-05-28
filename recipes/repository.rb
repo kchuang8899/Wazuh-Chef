@@ -18,9 +18,6 @@
 #
 
 case node['platform_family']
-when 'fedora', 'rhel'
-
-
 when 'debian'
   package 'lsb-release'
 

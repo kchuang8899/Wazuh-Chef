@@ -19,7 +19,7 @@
 NAME=ossec-authd
 HOME=/var/ossec
 DAEMON=/var/ossec/bin/ossec-authd
-DAEMON_ARGS="-p 1515 2>&1 >> /var/ossec/logs/ossec-authd.log &"
+DAEMON_ARGS="-p 1515"
 PIDDIR=/var/ossec/var/run
 SCRIPTNAME=/etc/init.d/ossec-authd
 
@@ -32,7 +32,7 @@ if [ ! -e $HOME/etc/sslmanager.key ]
       -subj /CN=fqdn/
 fi
 
-. /etc/rc.d/init.d/functions
+. /lib/lsb/init-functions
 
 getpid() {
     for filename in $PIDDIR/${NAME}*.pid; do
@@ -51,14 +51,12 @@ getpid() {
 
 start() {
   echo -n $"Starting $NAME: "
-  daemon $DAEMON $DAEMON_ARGS
+  $DAEMON $DAEMON_ARGS 2>&1 >> /var/ossec/logs/ossec-authd.log &
   retval=$?
   if [ $retval -eq 0 ]; then
-    echo_success
-    echo
+    echo "OK"
   else
-    echo_failure
-    echo
+    echo "FAILURE"
   fi
   return $retval
 }

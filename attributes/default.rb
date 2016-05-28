@@ -19,7 +19,6 @@
 # general settings
 default['ossec']['dir']             = '/var/ossec'
 default['ossec']['server_role']     = 'ossec_server'
-default['ossec']['server_env']      = nil
 default['ossec']['agent_server_ip'] = nil
 # The following attributes are mapped to XML for ossec.conf using
 # Gyoku. See the README for details on how this works.
@@ -190,8 +189,7 @@ default['ossec']['conf']['all']['rootcheck']['rootkit_files'] = "#{node['ossec']
 default['ossec']['conf']['all']['rootcheck']['rootkit_trojans'] = "#{node['ossec']['dir']}/etc/shared/rootkit_trojans.txt"
 default['ossec']['conf']['all']['rootcheck']['system_audit'] = [
   '/var/ossec/etc/shared/system_audit_rcl.txt',
-  '/var/ossec/etc/shared/cis_rhel_linux_rcl.txt',
-  '/var/ossec/etc/shared/cis_rhel6_linux_rcl.txt'
+  '/var/ossec/etc/shared/cis_debian_linux_rcl.txt'
   ]
 
 default['ossec']['conf']['all']['localfile'] = [

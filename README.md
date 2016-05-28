@@ -1,8 +1,6 @@
 ossec cookbook
 ==============
 
-[![Cookbook Version](https://img.shields.io/cookbook/v/ossec.svg)](https://supermarket.chef.io/cookbooks/ossec)
-
 Installs OSSEC from source in a server-agent installation. See:
 
 http://www.ossec.net/doc/manual/installation/index.html
@@ -15,22 +13,17 @@ Tested on Ubuntu and ArchLinux, but should work on any Unix/Linux platform suppo
 This cookbook doesn't configure Windows systems yet. For information on installing OSSEC on Windows, see the [free chapter](http://www.ossec.net/ossec-docs/OSSEC-book-ch2.pdf)
 
 #### Chef
-- Chef 11+
+- Chef 12+
 
 #### Cookbooks
 - apt
-- yum-atomic
 
 Attributes
 ----------
 
 * `node['ossec']['dir']` - Installation directory for OSSEC, default `/var/ossec`. All existing packages use this directory so you should not change this.
 * `node['ossec']['server_role']` - When using server/agent setup, this role is used to search for the OSSEC server, default `ossec_server`.
-* `node['ossec']['server_env']` - When using server/agent setup, this value will scope the role search to the specified environment, default nil.
 * `node['ossec']['agent_server_ip']` - The IP of the OSSEC server. The client recipe will attempt to determine this value via search. Default is nil, only required for agent installations.
-* `node['ossec']['data_bag']['encrypted']` - Boolean value which indicates whether or not the OSSEC data bag is encrypted
-* `node['ossec']['data_bag']['name']` - The name of the data bag to use
-* `node['ossec']['data_bag']['ssh']` - The name of the data bag item which contains the OSSEC keys
 
 ###ossec.conf
 
@@ -83,7 +76,7 @@ This produces:
         <disabled>yes</disabled>
       </rootcheck>
     </agent_config>
-    
+
     <agent_config os="Windows">
       <syscheck>
         <frequency>1234</frequency>
@@ -95,15 +88,12 @@ Recipes
 
 ###repository
 
-Adds the OSSEC repository to the package manager. This recipe is included by others and should not be used directly. For highly customised setups, you should use `ossec::install_agent` or `ossec::install_server` instead.
+Adds the OSSEC repository to the package agent. This recipe is included by others and should not be used directly. For highly customised setups, you should use `ossec::install_agent`.
 
 ###install_agent
 
-Installs the agent packages but performs no explicit configuation.
+Installs the agent packages but performs no explicit configuration.
 
-###install_server
-
-Install the server packages but performs no explicit configuation.
 
 ###common
 
@@ -111,21 +101,15 @@ Puts the configuration file in place and starts the (agent or server) service. T
 
 Note that the service will not be started if the client.keys file is missing or empty. For agents, this results in an error. For servers, this prevents ossec-remoted from starting, resulting in agents being unable to connect. Once client.keys does exist with content, simply perform another chef-client run to start the service.
 
-###default
-
-Runs `ossec::install_server` and then configures for local-only use. Do not mix this recipe with the others below.
 
 ###agent
 
-OSSEC uses the term `agent` instead of client. The agent recipe includes the `ossec::client` recipe.
+OSSEC uses the term `agent` instead of client. The agent recipe includes the `pm_wazuh_ossec::agent` recipe.
 
-###client
 
-Configures the system as an OSSEC agent to the OSSEC server. This recipe will search for the server based on `node['ossec']['server_role']`. It will also set the `agent_server_ip` attribute. The ossec user will have an SSH key created so the server can distribute the agent key.
+###manager
 
-###server
-
-Sets up a system to be an OSSEC server. This recipe will search for all nodes that have an `ossec` attribute and add them as an agent.
+Sets up a system to be an OSSEC server. This recipe will search for all nodes that have an `ossec` attribute and add them as an agent to register with the given server running ossec-authd. To allow registration with a new server after changing `agent_server_ip`, delete the client.keys file and rerun the recipe..
 
 To manage additional agents on the server that don't run chef, or for agentless OSSEC configuration (for example, routers), add a new node for them and create the `node['ossec']['agentless']` attribute as true. For example if we have a router named gw01.example.com with the IP `192.168.100.1`:
 
@@ -154,79 +138,61 @@ To manage additional agents on the server that don't run chef, or for agentless 
 
 Enable agentless monitoring in OSSEC and register the hosts on the server. Automated configuration of agentless nodes is not yet supported by this cookbook. For more information on the commands and configuration directives required in `ossec.conf`, see the [OSSEC Documentation](http://www.ossec.net/doc/manual/agent/agentless-monitoring.html)
 
-###agent_auth
-
-If you do not wish to distribute agent keys via SSH then the authd mechanism provides an alternative. Set the `agent_server_ip` attribute manually and this recipe will attempt to register with the given server running ossec-authd. To allow registration with a new server after changing `agent_server_ip`, delete the client.keys file and rerun the recipe.
-
-###authd
-
-For a server to accept agent registrations, it needs to be running ossec-authd. This recipe installs an init script for it (systemd only for now) and will attempt to start it once the mandatory SSL certificate and key have been put in place. From OSSEC 2.9, you can also set a CA certificate to validate agents against.
-
 Usage
 -----
 
 The cookbook can be used to install OSSEC in one of the three types:
 
-* local - use the ossec::default recipe.
-* server - use the ossec::server recipe.
-* agent - use the ossec::client recipe
+* server - use the pm_wazuh_ossec::manager recipe.
+* agent - use the pm_wazuh_ossec::agent recipe
+* API - use the pm_wazuh_ossec::wazuh-api recipe
 
-For local-only installations, add just `recipe[ossec]` to the node run list, or put it in a role (like a base role).
+For the OSSEC server, create a role, `phishme_server`. Add attributes per above as needed to customize the installation.
+```
+  {
+    "name": "phishme_server",
+    "description": "",
+    "json_class": "Chef::Role",
+    "default_attributes": {
 
-###Server/Agent
+    },
+    "override_attributes": {
 
-This section describes how to use the cookbook for server/agent configurations.
+    },
+    "chef_type": "role",
+    "run_list": [
+      "recipe[pm_wazuh_ossec::manager]"
+    ],
+    "env_run_lists": {
 
-The server will use SSH to distribute the OSSEC agent keys. Create a data bag `ossec`, with an item `ssh`. It should have the following structure:
-
-    {
-      "id": "ssh",
-      "pubkey": "",
-      "privkey": ""
     }
+  }
+```
 
-Generate an ssh keypair and get the privkey and pubkey values. The output of the two ruby commands should be used as the privkey and pubkey values respectively in the data bag.
+For OSSEC agents, create a role, `phishme_agent`.
 
-    ssh-keygen -t rsa -f /tmp/id_rsa
-    ruby -e 'puts IO.read("/tmp/id_rsa")'
-    ruby -e 'puts IO.read("/tmp/id_rsa.pub")'
+```
+  {
+    "name": "phishme_agent",
+    "description": "",
+    "json_class": "Chef::Role",
+    "default_attributes": {
 
-For the OSSEC server, create a role, `ossec_server`. Add attributes per above as needed to customize the installation.
-
-    % cat roles/ossec_server.rb
-    name "ossec_server"
-    description "OSSEC Server"
-    run_list("recipe[ossec::server]")
-    override_attributes(
-      "ossec" => {
-        "conf" => {
-          "server" => {
-            "global" => {
-              "email_to" => "ossec@yourdomain.com",
-              "smtp_server" => "smtp.yourdomain.com"
-            }
-          }
-        }
+    },
+    "override_attributes": {
+      "ossec": {
+        "agent_server_ip": "192.168.186.135"
       }
-    )
+    },
+    "chef_type": "role",
+    "run_list": [
+      "recipe[pm_wazuh_ossec::agent]"
+    ],
+    "env_run_lists": {
 
-For OSSEC agents, create a role, `ossec_client`.
-
-    % cat roles/ossec_client.rb
-    name "ossec_client"
-    description "OSSEC Client Agents"
-    run_list("recipe[ossec::client]")
-    override_attributes(
-      "ossec" => {
-        "conf" => {
-          "agent" => {
-            "syscheck" => {
-              "frequency" => 321
-            }
-          }
-        }
-      }
-    )
+    }
+  }
+```
 
 Customization
 ----

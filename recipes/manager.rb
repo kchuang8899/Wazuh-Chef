@@ -16,9 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+include_recipe 'apt::default'
 
-package 'packages to compile Wazuh-ossec' do
-  package_name ['gcc', 'make']
+package 'packages to compile Wazuh-ossec Ubuntu' do
+    package_name ['gcc', 'make', 'libssl-dev', 'curl']
 end
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}.tar.gz" do
@@ -51,9 +52,9 @@ execute "install_ossec" do
   action :nothing
 end
 
-include_recipe 'wazuh-ossec::common'
+include_recipe 'pm_wazuh_ossec::common'
 
-include_recipe 'wazuh-ossec::wazuh-api'
+include_recipe 'pm_wazuh_ossec::wazuh-api'
 
 bash "Creating ossec-authd key and cert" do
   code <<-EOH

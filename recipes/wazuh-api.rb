@@ -1,10 +1,14 @@
 
-if ['redhat', 'centos'].include?(node['platform'])
-  include_recipe 'yum-epel'
+bash "Install nodejs " do
+  code <<-EOH
+    cd #{Chef::Config[:file_cache_path]} &&
+    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+    EOH
+  not_if do ::File.exists?('/etc/apt/sources.list.d/nodesource.list') end
 end
 
 package 'packages for RESTful API' do
-  package_name ['npm', 'nodejs']
+   package_name ['nodejs']
 end
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['api']['version']}.tar.gz" do
@@ -46,12 +50,29 @@ file "#{node['ossec']['dir']}/api/ssl/htpasswd" do
   notifies :restart, "service[wazuh-api]", :delayed
 end
 
-template 'wazuh-api init' do
-  path '/etc/init.d/wazuh-api'
-  source 'wazuh-api.service.erb'
-  owner 'root'
-  group 'root'
-  mode 0755
+
+if node['init_package'] == 'systemd'
+  template 'wazuh-api init' do
+    path '/lib/systemd/system/wazuh-api.service'
+    source 'wazuh-api.service.erb'
+    owner 'root'
+    group 'root'
+    mode 0644
+  end
+
+  execute 'systemctl daemon-reload' do
+    action :nothing
+    subscribes :run, 'template[wazuh-api init]', :immediately
+  end
+else if node['init_package'] == 'init'
+       template 'wazuh-api init' do
+       path '/etc/init.d/wazuh-api'
+       source 'wazuh-api-init.service.erb'
+       owner 'root'
+       group 'root'
+       mode 0755
+     end
+    end
 end
 
 service 'wazuh-api' do
