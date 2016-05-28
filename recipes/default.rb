@@ -17,5 +17,5 @@
 # limitations under the License.
 #
 
-include_recipe 'wazuh_ossec::install_server'
+include_recipe 'wazuh_ossec::manager'
 include_recipe 'wazuh_ossec::common'
