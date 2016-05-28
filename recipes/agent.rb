@@ -43,7 +43,7 @@ execute "#{dir}/bin/agent-auth #{args}" do
   only_if { agent_auth['host'] && !File.size?("#{dir}/etc/client.keys") }
 end
 
-include_recipe 'pm_wazuh_ossec::common'
+include_recipe 'wazuh_ossec::common'
 
 cookbook_file "#{node['ossec']['dir']}/etc/internal_options.conf" do
   source "var/ossec/etc/agent_internal_options.conf"

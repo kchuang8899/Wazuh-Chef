@@ -52,9 +52,9 @@ execute "install_ossec" do
   action :nothing
 end
 
-include_recipe 'pm_wazuh_ossec::common'
+include_recipe 'wazuh_ossec::common'
 
-include_recipe 'pm_wazuh_ossec::wazuh-api'
+include_recipe 'wazuh_ossec::wazuh-api'
 
 bash "Creating ossec-authd key and cert" do
   code <<-EOH

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe 'pm_wazuh_ossec::repository'
+include_recipe 'wazuh_ossec::repository'
 
 package 'ossec' do
   package_name value_for_platform_family('debian' => 'ossec-hids-agent', 'default' => 'ossec-hids-client')
