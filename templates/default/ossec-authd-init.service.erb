@@ -32,7 +32,10 @@ if [ ! -e $HOME/etc/sslmanager.key ]
       -subj /CN=fqdn/
 fi
 
-. /lib/lsb/init-functions
+if test -f /lib/lsb/init-functions; then
+    . /lib/lsb/init-functions
+fi
+. /etc/init.d/functions
 
 getpid() {
     for filename in $PIDDIR/${NAME}*.pid; do
