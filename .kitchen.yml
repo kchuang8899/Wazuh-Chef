@@ -1,6 +1,8 @@
 ---
 driver:
   name: vagrant
+driver_config:
+  require_chef_omnibus: latest
 
 provisioner:
   name: chef_solo
@@ -12,9 +14,11 @@ platforms:
     run_list: apt::default
 suites:
   - name: manager
+    data_bags_path: "test/integration/manager/data_bags"
+    encrypted_data_bag_secret_key_path: "test/integration/manager/encrypted_data_bag_secret"
     run_list:
       - recipe[wazuh_ossec::manager]
-    attributes:      
+    attributes:
   - name: agent
     run_list:
       - recipe[wazuh_ossec::agent]

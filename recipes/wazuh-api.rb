@@ -38,15 +38,15 @@ bash "Install_npm_RESful API" do
   not_if "test -d #{node['ossec']['dir']}/api/node_modules"
 end
 
-#api_keys =  Chef::EncryptedDataBagItem.load("passwords", "api")
+api_keys =  Chef::EncryptedDataBagItem.load("passwords", "api")
 
 
 file "#{node['ossec']['dir']}/api/ssl/htpasswd" do
   mode 0544
   owner "root"
   group "root"
-#  content "#{api_keys['htpasswd_user']}:#{api_keys['htpasswd_passcode']}"
-  content "ossec:ossec"
+  content "#{api_keys['htpasswd_user']}:#{api_keys['htpasswd_passcode']}"
+#  content "ossec:ossec"
   action :create
   notifies :restart, "service[wazuh-api]", :delayed
 end
