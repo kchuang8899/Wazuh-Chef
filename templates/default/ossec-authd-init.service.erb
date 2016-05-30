@@ -34,8 +34,10 @@ fi
 
 if test -f /lib/lsb/init-functions; then
     . /lib/lsb/init-functions
-fi
+else
 . /etc/init.d/functions
+
+fi
 
 getpid() {
     for filename in $PIDDIR/${NAME}*.pid; do
