@@ -3,8 +3,10 @@ DEPENDENCIES
   wazuh_ossec
     path: .
     metadata: true
+  yum
 
 GRAPH
   apt (3.0.0)
   wazuh_ossec (0.0.1)
     apt (>= 0.0.0)
+  yum (3.10.0)

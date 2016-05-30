@@ -17,16 +17,22 @@
 # limitations under the License.
 #
 
+case node['platform']
+when 'debian', 'ubuntu'
 package 'packages to compile Wazuh-ossec Ubuntu' do
     package_name ['gcc', 'make', 'libssl-dev', 'curl']
 end
 
-remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}.tar.gz" do
-  source node['ossec']['manager']['url']
+when 'redhat', 'centos', 'fedora'
+
+package 'packages to compile Wazuh-ossec Ubuntu' do
+    package_name ['gcc', 'make', 'openssl-devel']
 end
 
-package 'openssl-devel' do
-  package_name value_for_platform_family('debian' => 'libssl-dev', 'default' => 'openssl-devel.x86_64')
+end
+
+remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}.tar.gz" do
+  source node['ossec']['manager']['url']
 end
 
 bash "Install Wazuh-Ossec" do

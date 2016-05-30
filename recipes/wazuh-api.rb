@@ -1,11 +1,28 @@
 
-bash "Install nodejs " do
-  code <<-EOH
-    cd #{Chef::Config[:file_cache_path]} &&
-    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-    EOH
-  not_if do ::File.exists?('/etc/apt/sources.list.d/nodesource.list') end
+
+case node['platform']
+when 'debian', 'ubuntu'
+
+  bash "Install nodejs " do
+    code <<-EOH
+      cd #{Chef::Config[:file_cache_path]} &&
+      curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+      EOH
+    not_if do ::File.exists?('/etc/apt/sources.list.d/nodesource.list') end
+  end
+
+when 'redhat', 'centos', 'fedora'
+
+  bash "Install nodejs " do
+    code <<-EOH
+      cd #{Chef::Config[:file_cache_path]} &&
+      curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
+      EOH
+    not_if do ::File.exists?('/etc/yum.repos.d/nodesource-el.repo') end
+  end
+
 end
+
 
 package 'packages for RESTful API' do
    package_name ['nodejs']
