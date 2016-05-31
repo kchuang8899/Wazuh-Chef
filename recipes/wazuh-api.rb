@@ -63,7 +63,6 @@ file "#{node['ossec']['dir']}/api/ssl/htpasswd" do
   owner "root"
   group "root"
   content "#{api_keys['htpasswd_user']}:#{api_keys['htpasswd_passcode']}"
-#  content "ossec:ossec"
   action :create
   notifies :restart, "service[wazuh-api]", :delayed
 end
