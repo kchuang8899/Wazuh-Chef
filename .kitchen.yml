@@ -6,24 +6,50 @@ driver_config:
 
 provisioner:
   name: chef_zero
+  environments_path: "test/environments"
+  data_bags_path: "test/integration/manager/data_bags"
+  encrypted_data_bag_secret_key_path: "test/integration/manager/encrypted_data_bag_secret"
 
 platforms:
   - name: ubuntu-14.04
 
 suites:
-  - name: manager
-    data_bags_path: "test/integration/manager/data_bags"
-    encrypted_data_bag_secret_key_path: "test/integration/manager/encrypted_data_bag_secret"
+  - name: manager-development
     driver:
       network:
       - ["private_network", {ip: "172.16.10.10"}]
     run_list:
       - recipe[wazuh_ossec::manager]
     attributes:
-  - name: agent
+
+  - name: manager-production
+    driver:
+      network:
+      - ["private_network", {ip: "10.16.10.10"}]
+    run_list:
+      - recipe[wazuh_ossec::manager]
+    attributes:
+
+  - name: agent-development
     driver:
       network:
       - ["private_network", {ip: "172.16.10.11"}]
     run_list:
       - recipe[wazuh_ossec::agent]
     attributes:
+         vagrant:
+    provisioner:
+      client_rb:
+        environment: development
+
+  - name: agent-production
+    driver:
+      network:
+      - ["private_network", {ip: "10.16.10.11"}]
+    run_list:
+      - recipe[wazuh_ossec::agent]
+    attributes:
+         vagrant:
+    provisioner:
+      client_rb:
+        environment: production

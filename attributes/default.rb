@@ -19,7 +19,7 @@
 # general settings
 default['ossec']['dir']             = '/var/ossec'
 default['ossec']['server_role']     = 'ossec_server'
-default['ossec']['agent_server_ip'] = "172.16.10.10"
+default['ossec']['agent_server_ip'] = nil
 # The following attributes are mapped to XML for ossec.conf using
 # Gyoku. See the README for details on how this works.
 
