@@ -147,10 +147,10 @@ The cookbook can be used to install OSSEC in one of the three types:
 * agent - use the wazuh_ossec::agent recipe
 * API - use the wazuh_ossec::wazuh-api recipe
 
-For the OSSEC server, create a role, `phishme_server`. Add attributes per above as needed to customize the installation.
+For the OSSEC server, create a role, `wazuh_server`. Add attributes per above as needed to customize the installation.
 ```
   {
-    "name": "phishme_server",
+    "name": "wazuh_server",
     "description": "",
     "json_class": "Chef::Role",
     "default_attributes": {
@@ -169,11 +169,11 @@ For the OSSEC server, create a role, `phishme_server`. Add attributes per above 
   }
 ```
 
-For OSSEC agents, create a role, `phishme_agent`.
+For OSSEC agents, create a role, `wazuh_agent`.
 
 ```
   {
-    "name": "phishme_agent",
+    "name": "wazuh_agent",
     "description": "",
     "json_class": "Chef::Role",
     "default_attributes": {
