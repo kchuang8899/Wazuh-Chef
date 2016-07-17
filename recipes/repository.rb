@@ -23,14 +23,21 @@ when 'debian'
 
   ohai 'reload lsb' do
     plugin 'lsb'
-    action :nothing
+    # action :nothing
     subscribes :reload, 'package[lsb-release]', :immediately
   end
 
-  apt_repository 'ossec' do
+  apt_repository 'Wazuh' do
     uri 'http://ossec.wazuh.com/repos/apt/' + node['platform']
     key 'http://ossec.wazuh.com/repos/apt/conf/ossec-key.gpg.key'
     distribution lazy { node['lsb']['codename'] }
     components ['main']
+  end
+when 'rhel'
+  yum_repository 'Wazuh' do
+    description 'WAZUH OSSEC Repository - www.wazuh.com'
+    baseurl 'http://ossec.wazuh.com/el/$releasever/$basearch'
+    gpgkey 'http://ossec.wazuh.com/key/RPM-GPG-KEY-OSSEC'
+    action :create
   end
 end

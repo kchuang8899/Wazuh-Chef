@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,59 +16,60 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-case node['platform']
-when 'debian', 'ubuntu'
-package 'packages to compile Wazuh-ossec Ubuntu' do
-    package_name ['gcc', 'make', 'libssl-dev', 'curl']
-end
-
-when 'redhat', 'centos', 'fedora'
+include_recipe 'apt::default'
 
 package 'packages to compile Wazuh-ossec Ubuntu' do
-    package_name ['gcc', 'make', 'openssl-devel']
+  package_name ['gcc', 'make', 'curl']
 end
 
-end
-
-remote_file "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}.tar.gz" do
+remote_file "/tmp/#{node['ossec']['manager']['name']}.tar.gz" do
   source node['ossec']['manager']['url']
 end
 
-bash "Install Wazuh-Ossec" do
+package 'openssl-devel' do
+  package_name value_for_platform_family('debian' => 'libssl-dev', 'default' => 'openssl-devel.x86_64')
+end
+
+bash 'Install Wazuh-Ossec' do
   code <<-EOH
-    cd #{Chef::Config[:file_cache_path]} && tar xvfz #{node['ossec']['manager']['name']}.tar.gz
-    EOH
-     not_if "test -d #{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}"
+    cd /tmp && tar xvfz #{node['ossec']['manager']['name']}.tar.gz
+      EOH
+  not_if { ::File.directory?("/tmp/#{node['ossec']['manager']['name']}") }
 end
 
-template "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}/etc/preloaded-vars.conf" do
-  source "ossec_preloaded_vars.conf.erb"
-  mode 00644
+template "/tmp/#{node['ossec']['manager']['name']}/etc/preloaded-vars.conf" do
+  source 'ossec_preloaded_vars.conf.erb'
+  mode '0644'
   variables({
-    :user_install_type => 'server',
-    :user_dir => node['ossec']['dir'],
+     :user_install_type => 'server',
+     :user_dir => node['ossec']['dir']
   })
-  notifies :run, "execute[install_ossec]", :immediately
+  notifies :run, 'execute[install_ossec]', :immediately
 end
 
-execute "install_ossec" do
-  command "#{Chef::Config[:file_cache_path]}/#{node['ossec']['manager']['name']}/install.sh"
+execute 'install_ossec' do
+  command "/tmp/#{node['ossec']['manager']['name']}/install.sh"
+  action :nothing
+  notifies :run, 'execute[enable_integration]', :immediately
+end
+
+execute 'enable_integration' do
+  command '/var/ossec/bin/ossec-control enable integrator'
   action :nothing
 end
 
 include_recipe 'wazuh_ossec::common'
 
-include_recipe 'wazuh_ossec::wazuh-api'
+include_recipe 'wazuh_ossec::wazuh_api'
 
-bash "Creating ossec-authd key and cert" do
+bash 'Creating ossec-authd key and cert' do
   code <<-EOH
     openssl genrsa -out #{node['ossec']['dir']}/etc/sslmanager.key 4096 &&
     openssl req -new -x509 -key #{node['ossec']['dir']}/etc/sslmanager.key\
    -out #{node['ossec']['dir']}/etc/sslmanager.cert -days 3650\
    -subj /CN=fqdn/
     EOH
-  not_if "test -d #{node['ossec']['dir']}/etc/sslmanager.cert"
+  not_if { ::File.exist?("#{node['ossec']['dir']}/etc/sslmanager.cert") }
 end
 
 authd = node['ossec']['authd']
@@ -79,7 +80,7 @@ if node['init_package'] == 'systemd'
     source 'ossec-authd.service.erb'
     owner 'root'
     group 'root'
-    mode 0644
+    mode '0644'
     variables authd
   end
 
@@ -87,32 +88,26 @@ if node['init_package'] == 'systemd'
     action :nothing
     subscribes :run, 'template[ossec-authd init]', :immediately
   end
-else if node['init_package'] == 'init'
-       template 'ossec-authd init' do
-         path '/etc/init.d/ossec-authd'
-         source 'ossec-authd-init.service.erb'
-         owner 'root'
-         group 'root'
-         mode 0755
-       end
-    end
+elsif node['init_package'] == 'init'
+  template 'ossec-authd init' do
+    path '/etc/init.d/ossec-authd'
+    source 'ossec-authd-init.service.erb'
+    owner 'root'
+    group 'root'
+    mode '0755'
+  end
 end
 
 service 'ossec-authd' do
   supports restart: true
   action [:enable, :start]
   subscribes :restart, 'template[ossec-authd init]'
-
-  only_if do
-    File.exist?(authd['certificate']) && File.exist?(authd['key']) &&
-      (authd['ca'].nil? || File.exist?(authd['ca']))
-  end
 end
 
-cookbook_file "#{node['ossec']['dir']}/etc/internal_options.conf" do
-  source "var/ossec/etc/manager_internal_options.conf"
+template "#{node['ossec']['dir']}/etc/internal_options.conf" do
+  source 'var/ossec/etc/manager_internal_options.conf'
   owner 'root'
   group 'ossec'
   action :create
-  notifies :restart, "service[ossec]", :delayed
+  notifies :restart, 'service[ossec]', :delayed
 end

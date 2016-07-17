@@ -104,7 +104,7 @@ Note that the service will not be started if the client.keys file is missing or 
 
 ###agent
 
-OSSEC uses the term `agent` instead of client. The agent recipe includes the `wazuh_ossec::agent` recipe.
+OSSEC uses the term `agent` instead of client. The agent recipe includes the `pm_wazuh_ossec::agent` recipe.
 
 
 ###manager
@@ -143,14 +143,14 @@ Usage
 
 The cookbook can be used to install OSSEC in one of the three types:
 
-* server - use the wazuh_ossec::manager recipe.
-* agent - use the wazuh_ossec::agent recipe
-* API - use the wazuh_ossec::wazuh-api recipe
+* server - use the pm_wazuh_ossec::manager recipe.
+* agent - use the pm_wazuh_ossec::agent recipe
+* API - use the pm_wazuh_ossec::wazuh-api recipe
 
-For the OSSEC server, create a role, `wazuh_server`. Add attributes per above as needed to customize the installation.
+For the OSSEC server, create a role, `phishme_server`. Add attributes per above as needed to customize the installation.
 ```
   {
-    "name": "wazuh_server",
+    "name": "phishme_server",
     "description": "",
     "json_class": "Chef::Role",
     "default_attributes": {
@@ -161,7 +161,7 @@ For the OSSEC server, create a role, `wazuh_server`. Add attributes per above as
     },
     "chef_type": "role",
     "run_list": [
-      "recipe[wazuh_ossec::manager]"
+      "recipe[pm_wazuh_ossec::manager]"
     ],
     "env_run_lists": {
 
@@ -169,11 +169,11 @@ For the OSSEC server, create a role, `wazuh_server`. Add attributes per above as
   }
 ```
 
-For OSSEC agents, create a role, `wazuh_agent`.
+For OSSEC agents, create a role, `phishme_agent`.
 
 ```
   {
-    "name": "wazuh_agent",
+    "name": "phishme_agent",
     "description": "",
     "json_class": "Chef::Role",
     "default_attributes": {
@@ -186,7 +186,7 @@ For OSSEC agents, create a role, `wazuh_agent`.
     },
     "chef_type": "role",
     "run_list": [
-      "recipe[wazuh_ossec::agent]"
+      "recipe[pm_wazuh_ossec::agent]"
     ],
     "env_run_lists": {
 

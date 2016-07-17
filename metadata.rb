@@ -15,3 +15,4 @@ end
 end
 
 depends 'apt'
+depends 'yum'

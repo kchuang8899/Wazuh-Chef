@@ -18,7 +18,9 @@
 #
 
 class Chef
+  # Class that supports the interface between Chef and OSSEC
   module OSSEC
+    # Defines methods that return serialized OSSEC data to Chef
     module Helpers
       # Gyoku looks for a symbol called :content! but Chef attributes
       # are always stringified. We can't just call symbolize_keys

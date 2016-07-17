@@ -10,7 +10,11 @@
   },
   "override_attributes": {
     "ossec": {
-      "agent_server_ip": "172.16.10.10"
+      "hostname_server_ip": "manager.wazuh-test.com"
+    },
+    "filebeat": {
+      "ossec_index_name": "ossec-alerts-development",
+      "logstash_servers": "elk.wazuh-test.com:5000"
     }
   }
 }

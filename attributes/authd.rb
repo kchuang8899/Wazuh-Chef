@@ -24,8 +24,8 @@ default['ossec']['authd']['ca'] = nil
 default['ossec']['authd']['certificate'] = "#{node['ossec']['dir']}/etc/sslmanager.cert"
 default['ossec']['authd']['key'] = "#{node['ossec']['dir']}/etc/sslmanager.key"
 
-default['ossec']['agent_auth']['name'] = node['fqdn']
-default['ossec']['agent_auth']['host'] = node['ossec']['agent_server_ip']
+default['ossec']['agent_auth']['name'] = node['hostname']
+default['ossec']['agent_auth']['host'] = node['ossec']['hostname_server_ip']
 default['ossec']['agent_auth']['port'] = node['ossec']['authd']['port']
 
 default['ossec']['agent_auth']['ca'] = nil

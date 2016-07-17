@@ -19,7 +19,7 @@
 
 ruby_block 'ossec install_type' do
   block do
-    if node.recipes.include?('ossec::default')
+    if node['recipes'].include?('ossec::default')
       type = 'local'
     else
       type = nil
@@ -34,7 +34,7 @@ ruby_block 'ossec install_type' do
       end
     end
 
-    node.set['ossec']['install_type'] = type
+    node.normal['ossec']['install_type'] = type
   end
 end
 
@@ -46,7 +46,7 @@ end
 file "#{node['ossec']['dir']}/etc/ossec.conf" do
   owner 'root'
   group 'ossec'
-  mode 0440
+  mode '0440'
   manage_symlink_source true
   notifies :restart, 'service[ossec]'
 
@@ -62,7 +62,7 @@ end
 file "#{node['ossec']['dir']}/etc/shared/agent.conf" do
   owner 'root'
   group 'ossec'
-  mode 0440
+  mode '0440'
   notifies :restart, 'service[ossec]'
 
   # Even if agent.cont is not appropriate for this kind of
@@ -87,21 +87,30 @@ end
 # client.keys file will cause a server not to listen and an agent to
 # abort immediately. Explicitly stopping the service here after
 # installation allows Chef to start it when client.keys has content.
-service 'stop ossec' do
-  service_name 'ossec' unless platform_family?('debian')
-  action :nothing
 
+service 'stop ossec' do
+  case node['platform']
+  when 'centos', 'redhat', 'fedora'
+    service_name 'ossec-hids-agent'
+  else
+    service_name 'ossec'
+  end
+  action :nothing
   %w( disable stop ).each do |action|
     subscribes action, 'package[ossec]', :immediately
   end
 end
 
 service 'ossec' do
-  service_name 'ossec' unless platform_family?('debian')
+  case node['platform']
+  when 'centos', 'redhat', 'fedora'
+    service_name 'ossec-hids-agent'
+  else
+    service_name 'ossec'
+  end
   supports status: true, restart: true
   action [:enable, :start]
-
   not_if do
-      (node['ossec']['install_type'] == 'agent' && node['ossec']['agent_server_ip'].nil?)
-    end
+    (node['ossec']['install_type'] == 'agent' && node['ossec']['hostname_server_ip'].nil?)
+  end
 end

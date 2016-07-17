@@ -24,13 +24,13 @@
 
 NAME="wazuh-api"
 PID_PATH="/var/run/wazuh-api.pid"
-BIN_DIR="/usr/bin/node"
+BIN_DIR="/usr/bin/nodejs"
 APP_PATH="/var/ossec/api/app.js"
 
 start() {
         if [ ! -f $PID_PATH ] || [ -z "$(ps -e | egrep "^\ *$(cat /var/run/wazuh-api.pid) .* node.*")" ]; then
          echo -n $"Starting $NAME: "
-         $BIN_DIR $APP_PATH > /var/ossec/logs/api.log &
+         $BIN_DIR $APP_PATH &
 
         if [ "$?" = "0" ]; then
             echo "Success"

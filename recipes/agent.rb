@@ -16,8 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe 'wazuh_ossec::install_agent'
-
+include_recipe 'apt::default'
+include_recipe 'pm_wazuh_ossec::install_agent'
 
 dir = node['ossec']['dir']
 agent_auth = node['ossec']['agent_auth']
@@ -42,12 +42,12 @@ execute "#{dir}/bin/agent-auth #{args}" do
   only_if { agent_auth['host'] && !File.size?("#{dir}/etc/client.keys") }
 end
 
-include_recipe 'wazuh_ossec::common'
+include_recipe 'pm_wazuh_ossec::common'
 
-cookbook_file "#{node['ossec']['dir']}/etc/internal_options.conf" do
-  source "var/ossec/etc/agent_internal_options.conf"
+template "#{node['ossec']['dir']}/etc/internal_options.conf" do
+  source 'var/ossec/etc/agent_internal_options.conf'
   owner 'root'
   group 'ossec'
   action :create
-  notifies :restart, "service[ossec]", :delayed
+  notifies :restart, 'service[ossec]', :delayed
 end
