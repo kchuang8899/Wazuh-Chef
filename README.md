@@ -145,9 +145,10 @@ The cookbook can be used to install OSSEC in one of the three types:
 
 * server - use the wazuh_ossec::manager recipe.
 * agent - use the wazuh_ossec::agent recipe
-* API - use the wazuh_ossec::wazuh-api recipe
+* API - use the wazuh_ossec::wazuh_api recipe
 
 For the OSSEC server, create a role, `wazuh_server`. Add attributes per above as needed to customize the installation.
+
 ```
   {
     "name": "wazuh_server",
