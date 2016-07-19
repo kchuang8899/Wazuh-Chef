@@ -1,8 +1,0 @@
-[Unit]
-Description=Wazuh API
-
-[Service]
-EnvironmentFile=/etc/ossec-init.conf
-Environment=DIRECTORY=/var/ossec
-
-ExecStart=/usr/bin/env /usr/bin/node ${DIRECTORY}/api/app.js > /var/ossec/logs/api.log &

@@ -63,36 +63,9 @@ file "#{node['ossec']['dir']}/api/ssl/htpasswd" do
   notifies :restart, 'service[wazuh-api]', :delayed
 end
 
-  template 'Install daemon.sh' do
-    path '/var/ossec/api/scripts/install_daemon.sh'
-    source 'install_daemon.sh'
-    owner 'root'
-    group 'root'
-    mode '0744'
-    action :create
-  end
-
-  template 'wazuh-api' do
-    path 'var/ossec/api/scripts/wazuh-api'
-    source 'wazuh-api'
-    owner 'root'
-    group 'root'
-    mode '0755'
-    action :create
-  end
-
-  template 'wazuh-api service' do
-    path '/var/ossec/api/scripts/wazuh-api.service'
-    source 'wazuh-api.service'
-    owner 'root'
-    group 'root'
-    mode '0755'
-    action :create
-  end
-
-  execute 'wazuh service' do
-    command 'cd /var/ossec/api/scripts && sh install_daemon.sh'
-  end
+execute 'Wazuh API service' do
+  command 'cd /var/ossec/api/scripts && sh install_daemon.sh'
+end
 
 service 'wazuh-api' do
   supports restart: true
