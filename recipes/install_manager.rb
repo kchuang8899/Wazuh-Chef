@@ -19,4 +19,4 @@
 
 include_recipe 'wazuh_ossec::repository'
 
-package 'wazuh-agent'
+package 'wazuh-manager'

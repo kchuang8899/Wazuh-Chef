@@ -23,16 +23,13 @@ DAEMON_ARGS="-p 1515"
 PIDDIR=/var/ossec/var/run
 SCRIPTNAME=/etc/init.d/ossec-authd
 
-if [ ! -e $HOME/etc/sslmanager.key ]
-  then
-    echo "Creating ossec-authd key and cert"
-    openssl genrsa -out $HOME/etc/sslmanager.key 4096
-    openssl req -new -x509 -key $HOME/etc/sslmanager.key\
-      -out $HOME/etc/sslmanager.cert -days 3650\
-      -subj /CN=fqdn/
-fi
 
-. /lib/lsb/init-functions
+
+if test -f /lib/lsb/init-functions; then
+    . /lib/lsb/init-functions
+else
+    . /etc/init.d/functions
+fi
 
 getpid() {
     for filename in $PIDDIR/${NAME}*.pid; do

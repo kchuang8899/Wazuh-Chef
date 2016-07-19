@@ -89,11 +89,11 @@ end
 # installation allows Chef to start it when client.keys has content.
 
 service 'stop ossec' do
-  case node['platform']
-  when 'centos', 'redhat', 'fedora'
-    service_name 'ossec-hids-agent'
+  case node['ossec']['install_type']
+  when 'agent'
+    service_name 'wazuh-agent'
   else
-    service_name 'ossec'
+    service_name 'wazuh-manager'
   end
   action :nothing
   %w( disable stop ).each do |action|
@@ -102,11 +102,11 @@ service 'stop ossec' do
 end
 
 service 'ossec' do
-  case node['platform']
-  when 'centos', 'redhat', 'fedora'
-    service_name 'ossec-hids-agent'
+  case node['ossec']['install_type']
+  when 'agent'
+    service_name 'wazuh-agent'
   else
-    service_name 'ossec'
+    service_name 'wazuh-manager'
   end
   supports status: true, restart: true
   action [:enable, :start]

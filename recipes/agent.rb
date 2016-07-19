@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 include_recipe 'apt::default'
-include_recipe 'pm_wazuh_ossec::install_agent'
+include_recipe 'wazuh_ossec::install_agent'
 
 dir = node['ossec']['dir']
 agent_auth = node['ossec']['agent_auth']

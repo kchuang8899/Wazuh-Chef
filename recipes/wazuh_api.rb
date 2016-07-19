@@ -63,30 +63,36 @@ file "#{node['ossec']['dir']}/api/ssl/htpasswd" do
   notifies :restart, 'service[wazuh-api]', :delayed
 end
 
-if node['init_package'] == 'systemd'
-  template 'wazuh-api init' do
-    path '/lib/systemd/system/wazuh-api.service'
-    source 'wazuh-api.service.erb'
+  template 'Install daemon.sh' do
+    path '/var/ossec/api/scripts/install_daemon.sh'
+    source 'install_daemon.sh'
     owner 'root'
     group 'root'
-    mode '0644'
+    mode '0744'
     action :create
   end
 
-  execute 'systemctl daemon-reload' do
-    action :nothing
-    subscribes :run, 'template[wazuh-api init]', :immediately
-  end
-elsif node['init_package'] == 'init'
-  template 'wazuh-api init' do
-    path '/etc/init.d/wazuh-api'
-    source 'wazuh-api-init.service.erb'
+  template 'wazuh-api' do
+    path 'var/ossec/api/scripts/wazuh-api'
+    source 'wazuh-api'
     owner 'root'
     group 'root'
     mode '0755'
     action :create
   end
-end
+
+  template 'wazuh-api service' do
+    path '/var/ossec/api/scripts/wazuh-api.service'
+    source 'wazuh-api.service'
+    owner 'root'
+    group 'root'
+    mode '0755'
+    action :create
+  end
+
+  execute 'wazuh service' do
+    command 'cd /var/ossec/api/scripts && sh install_daemon.sh'
+  end
 
 service 'wazuh-api' do
   supports restart: true

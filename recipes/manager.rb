@@ -16,47 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe 'apt::default'
 
-package 'packages to compile Wazuh-ossec Ubuntu' do
-  package_name ['gcc', 'make', 'curl']
+case node['platform']
+when 'debian', 'ubuntu'
+  include_recipe 'apt::default'
 end
 
-remote_file "/tmp/#{node['ossec']['manager']['name']}.tar.gz" do
-  source node['ossec']['manager']['url']
-end
-
-package 'openssl-devel' do
-  package_name value_for_platform_family('debian' => 'libssl-dev', 'default' => 'openssl-devel.x86_64')
-end
-
-bash 'Install Wazuh-Ossec' do
-  code <<-EOH
-    cd /tmp && tar xvfz #{node['ossec']['manager']['name']}.tar.gz
-      EOH
-  not_if { ::File.directory?("/tmp/#{node['ossec']['manager']['name']}") }
-end
-
-template "/tmp/#{node['ossec']['manager']['name']}/etc/preloaded-vars.conf" do
-  source 'ossec_preloaded_vars.conf.erb'
-  mode '0644'
-  variables({
-     :user_install_type => 'server',
-     :user_dir => node['ossec']['dir']
-  })
-  notifies :run, 'execute[install_ossec]', :immediately
-end
-
-execute 'install_ossec' do
-  command "/tmp/#{node['ossec']['manager']['name']}/install.sh"
-  action :nothing
-  notifies :run, 'execute[enable_integration]', :immediately
-end
-
-execute 'enable_integration' do
-  command '/var/ossec/bin/ossec-control enable integrator'
-  action :nothing
-end
+include_recipe 'wazuh_ossec::install_manager'
 
 include_recipe 'wazuh_ossec::common'
 
@@ -109,5 +75,13 @@ template "#{node['ossec']['dir']}/etc/internal_options.conf" do
   owner 'root'
   group 'ossec'
   action :create
+  notifies :restart, 'service[ossec]', :delayed
+end
+
+template "#{node['ossec']['dir']}/rules/local_rules.xml" do
+  source 'ossec_local_rules.xml.erb'
+  owner 'root'
+  group 'ossec'
+  mode '0640'
   notifies :restart, 'service[ossec]', :delayed
 end

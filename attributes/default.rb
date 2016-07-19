@@ -33,7 +33,7 @@ default['ossec']['conf']['all']['rootcheck']['disabled'] = false
 default['ossec']['conf']['all']['rootcheck']['rootkit_files'] = "#{node['ossec']['dir']}/etc/shared/rootkit_files.txt"
 default['ossec']['conf']['all']['rootcheck']['rootkit_trojans'] = "#{node['ossec']['dir']}/etc/shared/rootkit_trojans.txt"
 
-%w(local server).each do |type|
+%w(local manager).each do |type|
   default['ossec']['conf'][type]['global']['jsonout_output'] = true
   default['ossec']['conf'][type]['global']['email_notification'] = false
 
