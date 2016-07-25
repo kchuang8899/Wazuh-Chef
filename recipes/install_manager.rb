@@ -19,4 +19,6 @@
 
 include_recipe 'wazuh_ossec::repository'
 
+package 'epel-release'
+
 package 'wazuh-manager'
