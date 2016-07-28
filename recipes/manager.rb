@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: ossec
+# Cookbook Name:: wazuh_ossec
 # Recipe:: authd
 #
 # Copyright 2015, Opscode, Inc.

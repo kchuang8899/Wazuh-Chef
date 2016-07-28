@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: ossec
+# Cookbook Name:: wazuh_ossec
 # Recipe:: default
 #
 # Copyright 2010-2015, Chef Software, Inc.

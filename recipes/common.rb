@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: ossec
+# Cookbook Name:: wazuh_ossec
 # Recipe:: common
 #
 # Copyright 2010, Opscode, Inc.
@@ -108,7 +108,6 @@ service 'ossec' do
   else
     service_name 'wazuh-manager'
   end
-  supports status: true, restart: true
   action [:enable, :start]
   not_if do
     (node['ossec']['install_type'] == 'agent' && node['ossec']['hostname_server_ip'].nil?)
